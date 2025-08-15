@@ -1,0 +1,20 @@
+name: "Static Analysis"
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+      - name: Install Dependencies
+        run: npm install
+      - name: Run Linter
+        run: npm run lint
+      - name: Run Formatter
+        run: npm run format:fix
