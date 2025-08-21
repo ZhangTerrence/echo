@@ -1,3 +1,9 @@
 @layer theme, base, mantine, components, utilities;
 @import "tailwindcss";
 @import "@mantine/core/styles.layer.css";
+@import "@mantine/notifications/styles.css";
+
+@theme inline {
+  --font-sans-serif: var(--font-montserrat);
+  --font-monospaced: var(--font-space-mono);
+}
