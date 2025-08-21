@@ -1,0 +1,13 @@
+import z from "zod/v4";
+
+export const RegisterSchema = z.object({
+  username: z.string().min(3, { error: "Username must contain at least 3 characters." }),
+  email: z.email({ error: "Invalid email address." }),
+  password: z
+    .string()
+    .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character." })
+    .regex(/[0-9]/, { message: "Password must contain at least one number." })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter." })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter." })
+    .min(8, { message: "Password must be at least 8 characters long." }),
+});
