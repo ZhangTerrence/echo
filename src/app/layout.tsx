@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Montserrat, Space_Mono } from "next/font/google";
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from "@mantine/core";
 import "./globals.css";
+import { Notifications } from "@mantine/notifications";
 
 const sansSerif = Montserrat({
   variable: "--font-montserrat",
@@ -31,7 +32,10 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body className={`${sansSerif.variable} ${monospaced.variable} antialiased`}>
-        <MantineProvider>{children}</MantineProvider>
+        <MantineProvider>
+          <Notifications />
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );

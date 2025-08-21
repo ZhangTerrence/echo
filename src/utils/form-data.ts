@@ -1,4 +1,4 @@
-export const constructFormData = (data: object) => {
+export function constructFormData(data: object) {
   const formData = new FormData();
 
   for (const [key, value] of Object.entries(data)) {
@@ -6,8 +6,8 @@ export const constructFormData = (data: object) => {
   }
 
   return formData;
-};
+}
 
-export const constructObject = (data: FormData) => {
+export function constructObject(data: FormData) {
   return Object.fromEntries(data.entries());
-};
+}

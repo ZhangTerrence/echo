@@ -1,6 +1,17 @@
 "use client";
 
-import { Anchor, Button, Divider, Group, Paper, PasswordInput, Stack, Text, TextInput } from "@mantine/core";
+import {
+  Anchor,
+  Button,
+  Divider,
+  Group,
+  LoadingOverlay,
+  Paper,
+  PasswordInput,
+  Stack,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { upperFirst, useToggle } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -9,12 +20,15 @@ import { zod4Resolver } from "mantine-form-zod-resolver";
 import { LoginSchema } from "@/lib/zod/login-schema";
 import { RegisterSchema } from "@/lib/zod/register-schema";
 import { signup } from "@/actions/auth/signup";
-import { constructFormData } from "@/lib/form-data";
+import { constructFormData } from "@/utils/form-data";
 import { login } from "@/actions/auth/login";
+import { useDisclosure } from "@mantine/hooks";
+import { showErrorNotifications } from "@/utils/notifications";
 
 export function AuthenticationForm(props: { type: "login" | "register" }) {
   const [type, toggle] = useToggle(["login", "register"]);
   const [step, setStep] = useState(0);
+  const [loading, { toggle: toggleLoading }] = useDisclosure(false);
 
   const isLogin = props.type === "login";
 
@@ -49,16 +63,21 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
       return;
     }
 
+    toggleLoading();
     if (type === "register") {
-      const resp = await signup(constructFormData(form.values));
-      console.log(resp);
+      const response = await signup(constructFormData(form.values));
+      showErrorNotifications("Error registering.", response);
     } else {
-      await login(constructFormData(form.values));
+      const response = await login(constructFormData(form.values));
+      showErrorNotifications("Error logging in.", response);
     }
+    toggleLoading();
   };
 
   return (
     <Paper radius="md" p="lg" withBorder {...props}>
+      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+
       <Text size="lg" fw={500} mb="lg">
         {upperFirst(props.type)}
       </Text>

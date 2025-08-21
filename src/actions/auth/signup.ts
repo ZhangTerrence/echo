@@ -6,16 +6,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { RegisterSchema } from "@/lib/zod/register-schema";
 import { z } from "zod/v4";
-import { constructObject } from "@/lib/form-data";
+import { constructObject } from "@/utils/form-data";
 
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
   const validatedFields = RegisterSchema.safeParse(constructObject(formData));
   if (!validatedFields.success) {
-    return {
-      errors: z.treeifyError(validatedFields.error),
-    };
+    return z.treeifyError(validatedFields.error);
   }
 
   const data = {
