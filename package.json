@@ -2,12 +2,14 @@
   "name": "echo",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "format:fix": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint-staged": "npm run lint; npm run format:fix; git add .",
     "prepare": "husky"
   },
