@@ -18,8 +18,8 @@ export function showErrorNotifications(
   for (const error of errors) {
     notifications.show({
       color: "red",
-      title: errorTitle,
       message: error,
+      title: errorTitle,
     });
   }
 }

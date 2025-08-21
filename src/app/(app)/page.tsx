@@ -1,9 +1,10 @@
-import { AppShell, AppShellHeader, AppShellMain, Group, Autocomplete, Button, Text } from "@mantine/core";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { AppShell, AppShellHeader, AppShellMain, Autocomplete, Button, Group, Text } from "@mantine/core";
 import { Copy, Search } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
+
 import { LogoutButton } from "@/components/LogoutButton";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -13,14 +14,14 @@ export default async function HomePage() {
     <AppShell header={{ height: 60 }} padding="md">
       <AppShellHeader withBorder>
         <Group className="h-full justify-between px-4">
-          <Button component={Link} leftSection={<Copy />} href="/" variant="transparent">
+          <Button component={Link} href="/" leftSection={<Copy />} variant="transparent">
             Echo
           </Button>
           <Autocomplete
-            placeholder="Search"
-            leftSection={<Search />}
-            visibleFrom="xs"
             clearable
+            leftSection={<Search />}
+            placeholder="Search"
+            visibleFrom="xs"
             wrapperProps={{
               className: "w-1/2",
             }}

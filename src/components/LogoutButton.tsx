@@ -1,8 +1,9 @@
 "use client";
 
 import { Button } from "@mantine/core";
-import { createClient } from "@/utils/supabase/client";
 import { redirect } from "next/navigation";
+
+import { createClient } from "@/utils/supabase/client";
 
 export function LogoutButton() {
   const supabase = createClient();

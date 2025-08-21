@@ -1,24 +1,26 @@
-import React from "react";
 import type { Metadata } from "next";
-import { Montserrat, Space_Mono } from "next/font/google";
-import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from "@mantine/core";
-import "./globals.css";
+
+import { ColorSchemeScript, mantineHtmlProps, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
+import { Montserrat, Space_Mono } from "next/font/google";
+
+import "./globals.css";
+import React from "react";
 
 const sansSerif = Montserrat({
-  variable: "--font-montserrat",
   subsets: ["latin"],
+  variable: "--font-montserrat",
 });
 
 const monospaced = Space_Mono({
-  weight: "400",
-  variable: "--font-space-mono",
   subsets: ["latin"],
+  variable: "--font-space-mono",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
-  title: "Echo",
   description: "A social media website.",
+  title: "Echo",
 };
 
 export default function RootLayout({

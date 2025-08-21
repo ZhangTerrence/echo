@@ -14,15 +14,16 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { upperFirst, useToggle } from "@mantine/hooks";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import { useDisclosure } from "@mantine/hooks";
 import { zod4Resolver } from "mantine-form-zod-resolver";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import { login } from "@/actions/auth/login";
+import { signup } from "@/actions/auth/signup";
 import { LoginSchema } from "@/lib/zod/login-schema";
 import { RegisterSchema } from "@/lib/zod/register-schema";
-import { signup } from "@/actions/auth/signup";
 import { constructFormData } from "@/utils/form-data";
-import { login } from "@/actions/auth/login";
-import { useDisclosure } from "@mantine/hooks";
 import { showErrorNotifications } from "@/utils/notifications";
 
 export function AuthenticationForm(props: { type: "login" | "register" }) {
@@ -33,12 +34,12 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
   const isLogin = props.type === "login";
 
   const form = useForm({
-    mode: "uncontrolled",
     initialValues: {
       email: "",
-      username: "",
       password: "",
+      username: "",
     },
+    mode: "uncontrolled",
     validate: isLogin ? zod4Resolver(LoginSchema) : zod4Resolver(RegisterSchema),
   });
 
@@ -75,10 +76,10 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
   };
 
   return (
-    <Paper radius="md" p="lg" withBorder {...props}>
-      <LoadingOverlay visible={loading} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
+    <Paper p="lg" radius="md" withBorder {...props}>
+      <LoadingOverlay overlayProps={{ blur: 2, radius: "sm" }} visible={loading} zIndex={1000} />
 
-      <Text size="lg" fw={500} mb="lg">
+      <Text fw={500} mb="lg" size="lg">
         {upperFirst(props.type)}
       </Text>
 
@@ -86,13 +87,13 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
         <Stack gap="xs">
           {type === "register" && step === 0 && (
             <TextInput
-              required
-              label="Username"
-              placeholder="Your username"
-              value={form.values.username}
-              onChange={(event) => form.setFieldValue("username", event.currentTarget.value)}
               error={form.errors.username}
+              label="Username"
+              onChange={(event) => form.setFieldValue("username", event.currentTarget.value)}
+              placeholder="Your username"
               radius="md"
+              required
+              value={form.values.username}
               wrapperProps={{
                 className: "w-[40rem]",
               }}
@@ -109,26 +110,26 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
               <Divider label="Or continue with email" labelPosition="center" />
 
               <TextInput
-                required
-                label="Email"
-                placeholder="hello@mantine.dev"
-                value={form.values.email}
-                onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
                 error={form.errors.email}
+                label="Email"
+                onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
+                placeholder="hello@mantine.dev"
                 radius="md"
+                required
+                value={form.values.email}
                 wrapperProps={{
                   className: "w-[40rem]",
                 }}
               />
 
               <PasswordInput
-                required
-                label="Password"
-                placeholder="Your password"
-                value={form.values.password}
-                onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
                 error={form.errors.password}
+                label="Password"
+                onChange={(event) => form.setFieldValue("password", event.currentTarget.value)}
+                placeholder="Your password"
                 radius="md"
+                required
+                value={form.values.password}
                 wrapperProps={{
                   className: "w-[40rem]",
                 }}
@@ -138,7 +139,7 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
         </Stack>
         <Group justify="space-between" mt="md">
           {(isLogin || step === 0) && (
-            <Anchor component={Link} type="button" c="dimmed" size="sm" href={isLogin ? "/register" : "/login"}>
+            <Anchor c="dimmed" component={Link} href={isLogin ? "/register" : "/login"} size="sm" type="button">
               {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
             </Anchor>
           )}
