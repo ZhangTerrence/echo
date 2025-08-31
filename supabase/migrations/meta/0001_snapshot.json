@@ -55,12 +55,8 @@
           "tableFrom": "communities",
           "tableTo": "users",
           "schemaTo": "auth",
-          "columnsFrom": [
-            "ownerId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["ownerId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -70,9 +66,7 @@
         "communities_name_unique": {
           "name": "communities_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
