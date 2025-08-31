@@ -1,19 +1,33 @@
 "use server";
 
+import { AuthError } from "@supabase/auth-js";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod/v4";
 
-import { RegisterSchema } from "@/lib/zod/register-schema";
+import { RegisterSchema } from "@/lib/zod/auth/register";
 import { constructObject } from "@/utils/form-data";
 import { createClient } from "@/utils/supabase/server";
 
-export async function signup(formData: FormData) {
+export type RegisterResponseType =
+  | {
+      error: AuthError;
+      errorType: "AUTH_ERROR";
+    }
+  | {
+      error: unknown;
+      errorType: "SCHEMA_ERROR";
+    };
+
+export async function register(formData: FormData): Promise<RegisterResponseType> {
   const supabase = await createClient();
 
   const validatedFields = RegisterSchema.safeParse(constructObject(formData));
   if (!validatedFields.success) {
-    return z.treeifyError(validatedFields.error);
+    return {
+      error: z.flattenError(validatedFields.error),
+      errorType: "SCHEMA_ERROR",
+    };
   }
 
   const data = {
@@ -30,9 +44,13 @@ export async function signup(formData: FormData) {
     },
   });
   if (error) {
-    redirect("/error");
+    console.error(error);
+    return {
+      error: error,
+      errorType: "AUTH_ERROR",
+    };
   }
 
-  revalidatePath("/", "layout");
+  revalidatePath("/");
   redirect("/");
 }
