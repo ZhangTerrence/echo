@@ -2,7 +2,7 @@
 
 import { Button, Group, useMantineColorScheme } from "@mantine/core";
 
-export function ThemeSwitcher() {
+export function ColorSchemeSwitcher() {
   const { clearColorScheme, setColorScheme } = useMantineColorScheme();
 
   return (

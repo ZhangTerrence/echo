@@ -9,29 +9,33 @@ import {
   Paper,
   PasswordInput,
   Stack,
+  Stepper,
   Text,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { upperFirst, useToggle } from "@mantine/hooks";
-import { useDisclosure } from "@mantine/hooks";
+import { upperFirst, useDisclosure, useToggle } from "@mantine/hooks";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { login } from "@/actions/auth/login";
-import { signup } from "@/actions/auth/signup";
-import { LoginSchema } from "@/lib/zod/login-schema";
-import { RegisterSchema } from "@/lib/zod/register-schema";
+import { login, LoginResponseType } from "@/lib/actions/auth/login";
+import { register, RegisterResponseType } from "@/lib/actions/auth/register";
+import { FlattenedErrors } from "@/lib/zod-error";
+import { LoginSchema } from "@/lib/zod/auth/login";
+import { RegisterSchema } from "@/lib/zod/auth/register";
 import { constructFormData } from "@/utils/form-data";
-import { showErrorNotifications } from "@/utils/notifications";
+import { showAuthErrorMessage, showInvalidSchemaErrors } from "@/utils/notifications";
 
 export function AuthenticationForm(props: { type: "login" | "register" }) {
   const [type, toggle] = useToggle(["login", "register"]);
   const [step, setStep] = useState(0);
-  const [loading, { toggle: toggleLoading }] = useDisclosure(false);
+  const [loading, { close, open }] = useDisclosure(false);
 
   const isLogin = props.type === "login";
+
+  const nextStep = () => setStep((current) => (current == 0 ? current + 1 : current));
+  const prevStep = () => setStep((current) => (current == 1 ? current - 1 : current));
 
   const form = useForm({
     initialValues: {
@@ -54,7 +58,7 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
       return;
     }
 
-    setStep((step) => step + 1);
+    nextStep();
   };
 
   const authenticate = async () => {
@@ -64,19 +68,24 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
       return;
     }
 
-    toggleLoading();
+    open();
+    let response: LoginResponseType | RegisterResponseType;
     if (type === "register") {
-      const response = await signup(constructFormData(form.values));
-      showErrorNotifications("Error registering.", response);
+      response = await register(constructFormData(form.values));
     } else {
-      const response = await login(constructFormData(form.values));
-      showErrorNotifications("Error logging in.", response);
+      response = await login(constructFormData(form.values));
     }
-    toggleLoading();
+    close();
+
+    if (response.errorType === "SCHEMA_ERROR") {
+      showInvalidSchemaErrors(response.error as FlattenedErrors);
+    } else {
+      showAuthErrorMessage(response.error);
+    }
   };
 
   return (
-    <Paper p="lg" radius="md" withBorder {...props}>
+    <Paper p="lg" radius="md" withBorder>
       <LoadingOverlay overlayProps={{ blur: 2, radius: "sm" }} visible={loading} zIndex={1000} />
 
       <Text fw={500} mb="lg" size="lg">
@@ -85,6 +94,13 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
 
       <form onSubmit={form.onSubmit(() => authenticate())}>
         <Stack gap="xs">
+          {type === "register" && (
+            <Stepper active={step}>
+              <Stepper.Step description="Add username" label="Step 1" />
+              <Stepper.Step description="Add email and password" label="Step 2" />
+            </Stepper>
+          )}
+
           {type === "register" && step === 0 && (
             <TextInput
               error={form.errors.username}
@@ -113,7 +129,7 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
                 error={form.errors.email}
                 label="Email"
                 onChange={(event) => form.setFieldValue("email", event.currentTarget.value)}
-                placeholder="hello@mantine.dev"
+                placeholder="Your email"
                 radius="md"
                 required
                 value={form.values.email}
@@ -143,7 +159,7 @@ export function AuthenticationForm(props: { type: "login" | "register" }) {
               {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
             </Anchor>
           )}
-          {!isLogin && step > 0 && <Button onClick={() => setStep((step) => step - 1)}>Back</Button>}
+          {!isLogin && step > 0 && <Button onClick={() => prevStep()}>Back</Button>}
 
           {!isLogin && step === 0 && <Button onClick={() => validateUsername()}>Next</Button>}
           {(isLogin || step > 0) && <Button type="submit">{upperFirst(type)}</Button>}
